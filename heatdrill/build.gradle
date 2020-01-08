@@ -1,0 +1,82 @@
+
+task stopHeatdrill(type:Exec) {
+ 	commandLine 'docker', 'rm', '-f', 'heatdrill'
+ 	ignoreExitValue true
+}
+
+task startHeatdrill(type:Exec, dependsOn:stopHeatdrill) {
+ 	workingDir "$projectDir/mockservice"
+ 	commandLine './run_heatdrill.sh', 'bg'
+}
+
+task stopMockDb(type:Exec) {
+ 	commandLine 'docker', 'rm', '-f', 'heatdrill_mockdb'
+ 	ignoreExitValue true
+}
+
+task startMockDb(type:Exec, dependsOn:stopMockDb) {
+ 	workingDir "$projectDir/mockservice"
+ 	commandLine './run_mockdb.sh', 'bg'
+}
+
+task startEnv {
+    dependsOn startMockDb
+    dependsOn startHeatdrill
+}
+
+task stopEnv {
+    dependsOn stopMockDb
+    dependsOn stopHeatdrill
+}
+
+task createPyVenv(type:Exec, dependsOn:stopHeatdrill) {
+ 	workingDir "$projectDir"
+ 	commandLine 'python3.6 -m venv ./venv36'
+}
+
+task runTests(type:Exec, dependsOn:stopHeatdrill) {
+ 	workingDir '$projectDir'
+ 	commandLine 'venv36/bin/python3.6 -m unittest src.layer_info_test.TestLayerInfo'
+}
+
+
+
+
+
+
+/*
+task intTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    shouldRunAfter test
+    
+    mustRunAfter runImage
+}
+
+
+task testImage(){
+	dependsOn runImage
+	dependsOn intTest	
+}
+
+String getTravisBuildNumber() {
+	String val = System.getenv('TRAVIS_BUILD_NUMBER')
+	
+	if(val == null)
+		val = 'localbuild'
+		
+	return val
+}
+
+def getCheckedOutGitCommitHash() {
+  'git log -1 --pretty=%H'.execute().text.trim()
+}
+
+def getTimestamp() {
+    def date = new Date()
+    return date.format('yyyy-MM-dd HH:mm:ss')
+}
+*/
