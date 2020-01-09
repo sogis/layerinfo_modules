@@ -1,6 +1,6 @@
 
-from .layer_info import layer_info
-from .layer_info import _testInit
+from .heatdrill import layer_info
+from .heatdrill import _testInit
 import unittest
 
 class TestLayerInfo(unittest.TestCase):
@@ -8,6 +8,14 @@ class TestLayerInfo(unittest.TestCase):
     SERVICE_URL: str = 'http://localhost:8080/service/'
     REQUEST_ID: str = 'requestId'
     TEXT_ROWS: str = 'infoTextRows'
+
+    def test_success(self):
+
+        _testInit(TestLayerInfo.SERVICE_URL, 10)
+        f_dict = layer_info('fuu', 2637503, 1245807, None, None, None)
+        feature = f_dict['features'][0]
+
+        self.assertGreater(_attrValue(feature, TestLayerInfo.REQUEST_ID), 0, 'Module ended with error')
 
     def test_timeout(self):
         _testInit(TestLayerInfo.SERVICE_URL, 0.001)

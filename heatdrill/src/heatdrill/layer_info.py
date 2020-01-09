@@ -1,8 +1,9 @@
 # Layerinfo module for usage in the context with uplus ews.
-# Uses the heatdrill-service to query the Information at the klicked location.
+# Uses the heatdrill-service to query the Information at the klicked loccation.
 
 import logging
 import requests
+from requests.adapters import HTTPAdapter
 import sys
 from os import environ
 from urllib import parse
@@ -136,6 +137,11 @@ def _queryService(url):
     :return dict: dict of the service response attributes
     """
     res = None
+
+    from requests.adapters import HTTPAdapter
+
+    s = requests.Session()
+    s.mount(url, HTTPAdapter(max_retries=3))
 
     resp = requests.get(url, timeout=conf['timeout'])
 

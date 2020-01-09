@@ -1,10 +1,10 @@
 
-task stopHeatdrill(type:Exec) {
+task stopHeatdrillMock(type:Exec) {
  	commandLine 'docker', 'rm', '-f', 'heatdrill'
  	ignoreExitValue true
 }
 
-task startHeatdrill(type:Exec, dependsOn:stopHeatdrill) {
+task startHeatdrillMock(type:Exec, dependsOn:stopHeatdrillMock) {
  	workingDir "$projectDir/mockservice"
  	commandLine './run_heatdrill.sh', 'bg'
 }
@@ -19,64 +19,36 @@ task startMockDb(type:Exec, dependsOn:stopMockDb) {
  	commandLine './run_mockdb.sh', 'bg'
 }
 
-task startEnv {
+task startEnvironment {
     dependsOn startMockDb
-    dependsOn startHeatdrill
+    dependsOn startHeatdrillMock
+
+    doLast{
+        sleep(5 * 1000)
+    }
 }
 
-task stopEnv {
+task stopEnvironment {
     dependsOn stopMockDb
-    dependsOn stopHeatdrill
+    dependsOn stopHeatdrillMock
 }
 
-task createPyVenv(type:Exec, dependsOn:stopHeatdrill) {
- 	workingDir "$projectDir"
- 	commandLine 'python3.6 -m venv ./venv36'
+task test(type:Exec, dependsOn:startEnvironment) {
+    workingDir "$projectDir"
+ 	commandLine './runtests.sh'
 }
 
-task runTests(type:Exec, dependsOn:stopHeatdrill) {
- 	workingDir '$projectDir'
- 	commandLine 'venv36/bin/python3.6 -m unittest src.layer_info_test.TestLayerInfo'
+ext {
+    zipName = String.format("heatdrill_%s.zip", new Date().format('yyyyMMdd'))
 }
 
+task packageDistribution(type: Zip, dependsOn:test) {
 
+    archiveFileName = zipName
+    destinationDirectory = file("$projectDir/dist")
 
-
-
-
-/*
-task intTest(type: Test) {
-    description = 'Runs integration tests.'
-    group = 'verification'
-
-    testClassesDirs = sourceSets.intTest.output.classesDirs
-    classpath = sourceSets.intTest.runtimeClasspath
-    shouldRunAfter test
-    
-    mustRunAfter runImage
+    from("$projectDir/src/heatdrill"){
+        exclude "__pycache__"
+    }
 }
 
-
-task testImage(){
-	dependsOn runImage
-	dependsOn intTest	
-}
-
-String getTravisBuildNumber() {
-	String val = System.getenv('TRAVIS_BUILD_NUMBER')
-	
-	if(val == null)
-		val = 'localbuild'
-		
-	return val
-}
-
-def getCheckedOutGitCommitHash() {
-  'git log -1 --pretty=%H'.execute().text.trim()
-}
-
-def getTimestamp() {
-    def date = new Date()
-    return date.format('yyyy-MM-dd HH:mm:ss')
-}
-*/
