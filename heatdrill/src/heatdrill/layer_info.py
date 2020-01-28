@@ -1,5 +1,5 @@
 # Layerinfo module for usage in the context with uplus ews.
-# Uses the heatdrill-service to query the Information at the klicked loccation.
+# Uses the heatdrill-service to query the Information at the klicked location.
 
 import logging
 import requests
@@ -47,6 +47,9 @@ def layer_info(layer, x, y, crs, params, identity):
     :param str identity: User name or Identity dict - not used in module
     """
     res = None
+
+    x = round(x)
+    y = round(y)
 
     log.setLevel(conf['loglevel'])
 
@@ -114,14 +117,14 @@ def _convertToFeatureDict(response, x, y):
         },
         {
             'name': 'x',
-            'value': round(x)
+            'value': x
         },
         {
             'name': 'y',
-            'value': round(y)
+            'value': y
         }
     ]
-    geometry = "POINT(%s %s)" % (round(x), round(y))
+    geometry = "POINT(%s %s)" % (x, y)
 
     featureDict = {'attributes': attributes, 'geometry': geometry}
     multiFeatureDict = {'features': [featureDict]}
@@ -181,14 +184,14 @@ def _return_error(usr_msg, x, y, log_msg=None):
         },
         {
             'name': 'x',
-            'value': round(x)
+            'value': x
         },
         {
             'name': 'y',
-            'value': round(y)
+            'value': y
         }
     ]
-    geometry = "POINT(%s %s)" % (round(x), round(y))
+    geometry = "POINT(%s %s)" % (x, y)
 
     features = []
     features.append({

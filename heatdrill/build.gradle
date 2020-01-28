@@ -42,7 +42,11 @@ ext {
     zipName = String.format("heatdrill_%s.zip", new Date().format('yyyyMMdd'))
 }
 
-task packageDistribution(type: Zip, dependsOn:test) {
+task delDistFolder(type: Delete, dependsOn:test) {
+    delete "$projectDir/dist"
+}
+
+task packageDistribution(type: Zip, dependsOn:delDistFolder) {
 
     archiveFileName = zipName
     destinationDirectory = file("$projectDir/dist")

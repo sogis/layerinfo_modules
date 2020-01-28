@@ -26,7 +26,6 @@ class TestLayerInfo(unittest.TestCase):
         _printRows(feature)
 
     def test_bogusUrl(self):
-
         _testInit('http://fuu/bar', 10)
         f_dict = layer_info('fuu', 2637503, 1245807, None, None, None)
         feature = f_dict['features'][0]
@@ -40,6 +39,16 @@ class TestLayerInfo(unittest.TestCase):
         feature = f_dict['features'][0]
 
         self.assertLess(_attrValue(feature, TestLayerInfo.REQUEST_ID), 0, 'Module must fail due to out of bouds call')
+        _printRows(feature)
+
+    def test_floatCoords(self):
+        _testInit('http://fuu/bar', 10)
+        f_dict = layer_info('fuu', 2637503.1, 1245807.1, None, None, None)
+        feature = f_dict['features'][0]
+
+        self.assertLess(_attrValue(feature, TestLayerInfo.REQUEST_ID), 0, 'Module must fail due to invalid url')
+        self.assertEqual(feature['geometry'], 'POINT(2637503 1245807)',
+                         'Returned Geometry is not "POINT(2637503 1245807)"')
         _printRows(feature)
 
     def test_validWKT_OnSuccess(self):
