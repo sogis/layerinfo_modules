@@ -1,4 +1,5 @@
 
+/*
 task stopHeatdrillMock(type:Exec) {
  	commandLine 'docker', 'rm', '-f', 'heatdrill'
  	ignoreExitValue true
@@ -19,6 +20,7 @@ task startMockDb(type:Exec, dependsOn:stopMockDb) {
  	commandLine './run_mockdb.sh', 'bg'
 }
 
+
 task startEnvironment {
     dependsOn startMockDb
     dependsOn startHeatdrillMock
@@ -32,27 +34,38 @@ task stopEnvironment {
     dependsOn stopMockDb
     dependsOn stopHeatdrillMock
 }
+*/
 
-task test(type:Exec, dependsOn:startEnvironment) {
-    workingDir "$projectDir"
- 	commandLine './runtests.sh'
+task stopEnvironment(type:Exec) {
+  workingDir "$projectDir/mockservice"
+  commandLine 'docker-compose', 'down'
+}
+
+task startEnvironment(type:Exec, dependsOn: stopEnvironment) {
+  workingDir "$projectDir/mockservice"
+  commandLine 'docker-compose', 'up', '-d'
+}
+
+task test(type:Exec) {
+  workingDir "$projectDir"
+  commandLine './runtests.sh'
 }
 
 ext {
-    zipName = String.format("heatdrill_%s.zip", new Date().format('yyyyMMdd'))
+  zipName = String.format("heatdrill_%s.zip", new Date().format('yyyyMMdd'))
 }
 
 task delDistFolder(type: Delete, dependsOn:test) {
-    delete "$projectDir/dist"
+  delete "$projectDir/dist"
 }
 
 task packageDistribution(type: Zip, dependsOn:delDistFolder) {
 
-    archiveFileName = zipName
-    destinationDirectory = file("$projectDir/dist")
+  archiveFileName = zipName
+  destinationDirectory = file("$projectDir/dist")
 
-    from("$projectDir/src/heatdrill"){
-        exclude "__pycache__"
-    }
+  from("$projectDir/src/heatdrill"){
+    exclude "__pycache__"
+  }
 }
 

@@ -10,12 +10,7 @@ dist/
 
 # Environments
 venv/
-venv36/
-
-# Gradle Wrapper
-gradle/
-gradlew
-gradlew.bat
+venv38/
 
 # All hidden files and folders, except gitignore
 .*

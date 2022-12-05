@@ -19,8 +19,10 @@ Zur (Weiter-)Entwicklung muss lokal die bezüglich der Versionen passende Python
 * Die notwendigen Bibliotheken in venv36 hinein installiert
 
 Mittels gradle wrapper werden:
-* Mock-Datenbank und Mock-Heatdrill-Service gestartet
-* Das python package nach erfolgreichen UnitTests unter /dist als zip erstellt. Die Versionierung erfolgt über das Datum im Dateinamen des zip.
+* Mock-Datenbank und Mock-Heatdrill-Service gestartet: **startEnvironment**   
+Nach dem Start muss http://localhost:8080/service?x=2600000&y=1250000 eine korrekte Antwort erzeugen.
+* Tests ausgeführt: **test**
+* Das python package nach erfolgreichen UnitTests unter /dist als zip erstellt. Die Versionierung erfolgt über das Datum im Dateinamen des zip. **packageDistribution**
 
 Details siehe in Datei build.gradle. 
 
